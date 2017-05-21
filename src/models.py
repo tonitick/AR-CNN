@@ -24,12 +24,15 @@ class ARCNN(object):
 
         shift_height = (conf.img_height - conf.valid_height) / 2
         shift_width = (conf.img_width - conf.valid_width) / 2
+        mid_compres = tf.strided_slice(self.compres, [0, shift_height, shift_width, 0], \
+                [conf.batch_size, shift_height + conf.valid_height, shift_width + conf.valid_width, conf.channel])
         mid_reconstruct = tf.strided_slice(F_4, [0, shift_height, shift_width, 0], \
                 [conf.batch_size, shift_height + conf.valid_height, shift_width + conf.valid_width, conf.channel])
         mid_truth = tf.strided_slice(self.truths, [0, shift_height, shift_width, 0], \
                 [conf.batch_size, shift_height + conf.valid_height, shift_width + conf.valid_width, conf.channel])
         
         with tf.name_scope('loss'):
+            self.original_loss = tf.reduce_mean(tf.square(mid_compres - mid_truth))
             self.loss = tf.reduce_mean(tf.square(mid_reconstruct - mid_truth))
             tf.summary.scalar('loss', self.loss)
         

@@ -45,7 +45,7 @@ def run(conf, data):
 
         writer.add_summary(summary, i)
 
-        PSNR = 10.0 * math.log(255 * 255 / cost) / math.log(10.0)
+        PSNR = 10.0 * math.log(cost) / math.log(10.0)
         print 'Epoch: %d, Cost: %f, PSNR: %f' % (i, cost, PSNR)
     
     saver.save(sess, conf.ckpt_path + '/model.ckpt')
@@ -53,7 +53,7 @@ def run(conf, data):
 
     print 'Validating...'
     num_val_epochs = conf.num_val / conf.test_size + 1
-    for i in range(conf.epochs):
+    for i in range(num_val_epochs):
 
         batch_truth, batch_compres = data.test.next_batch(conf.test_size)
 
@@ -61,7 +61,7 @@ def run(conf, data):
 
         cost = sess.run(model.loss, feed_dict=data_dict)
 
-        PSNR = 10.0 * math.log(255 * 255 / cost) / math.log(10.0)
+        PSNR = 10.0 * math.log(cost) / math.log(10.0)
         print 'Epoch: %d, Cost: %f, PSNR: %f' % (i, cost, PSNR)
 
 

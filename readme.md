@@ -1,4 +1,4 @@
-# VERY DEEP CONVOLUTIONAL NETWORKS(VGG, 2015)
+# Artifacts Reduction Convolutional Neural Network
 
 This is a Tensorflow implementation of [Artifacts Reduction Convolutional Neural Network](https://arxiv.org/abs/1504.06993).
 

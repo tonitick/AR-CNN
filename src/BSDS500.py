@@ -93,8 +93,8 @@ class Data(object):
 
     def next_batch(self, batch_size):
         truths, compres = self.sess.run([self.truths, self.compres])
-        truths = truths.astype(np.float32)
-        compres = compres.astype(np.float32)
+        truths = truths.astype(np.float32) / 255.0
+        compres = compres.astype(np.float32) / 255.0
         return truths, compres
 
 
