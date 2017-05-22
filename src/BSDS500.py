@@ -91,7 +91,7 @@ class Data(object):
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(coord=coord, sess=self.sess)
 
-    def next_batch(self, batch_size):
+    def next_batch(self):
         truths, compres = self.sess.run([self.truths, self.compres])
         truths = truths.astype(np.float32) / 255.0
         compres = compres.astype(np.float32) / 255.0
@@ -99,7 +99,7 @@ class Data(object):
 
 
 class BSDS500(object):
-    def __init__(self, data_path, batch_size, test_size, quality):
+    def __init__(self, data_path, train_size, test_size, quality):
         data_dir = data_path
         
         filenames_train = [os.path.join(data_dir, 'train_' + str(quality) + '.bin'), \
@@ -107,7 +107,7 @@ class BSDS500(object):
         min_fraction_of_examples_in_queue = 0.4
         min_queue_examples_train = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN *
                 min_fraction_of_examples_in_queue)
-        self.train = Data(filenames_train, min_queue_examples_train, batch_size, True)
+        self.train = Data(filenames_train, min_queue_examples_train, train_size, True)
 
         filenames_test = [os.path.join(data_dir, 'val_' + str(quality) + '.bin')]
         min_queue_examples_test = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
