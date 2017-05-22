@@ -6,7 +6,6 @@ from LIVE1 import *
 from utils import *
 from PIL import Image
 
-f = open("out.txt", "w")
 data = BSDS500('../data/ProcessedData/train', 1, 1305, 10)
 batch_y, batch_x = data.test.next_batch()
 batch_y, batch_x = data.test.next_batch()
@@ -38,7 +37,7 @@ save_img(truth_integrated, './train_truth.bmp')
 save_img(compres_integrated, './train_compres.bmp')
 
 data = LIVE1('../data/ProcessedData/test', 10)
-truth, compres = data.next_batch()
+truth, compres, height, width = data.next_batch()
 
 save_img(truth[0, :, :, :], './test_truth.bmp')
 save_img(compres[0, :, :, :], './test_compres.bmp')

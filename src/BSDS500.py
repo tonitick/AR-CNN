@@ -17,29 +17,22 @@ def read_img(filename_queue):
         pass
     result = ImgRecord()
 
-    # Dimensions of the images in the CIFAR-10 dataset.
-    # input format.
     result.height = HEIGHT
     result.width = WIDTH
     result.depth = CHANNEL
     image_bytes = result.height * result.width * result.depth
-    # Every record consists of a label followed by the image, with a
-    # fixed number of bytes for each.
+
     record_bytes_num = image_bytes * 2
 
-    # Read a record, getting filenames from the filename_queue.
     reader = tf.FixedLengthRecordReader(record_bytes=record_bytes_num)
     result.key, value = reader.read(filename_queue)
 
-    # Convert from a string to a vector of uint8 that is record_bytes long.
     record_bytes = tf.decode_raw(value, tf.uint8)
 
-    # The first bytes represent the label, which we convert from uint8->int32.
     depth_major_g = tf.reshape( \
             tf.strided_slice(record_bytes, [0], [image_bytes]), \
             [result.depth, result.width, result.height])
 
-    # The remaining bytes after the label represent the image, which we reshape
     depth_major_c = tf.reshape( \
             tf.strided_slice(record_bytes, [image_bytes], \
                     [record_bytes_num]), \

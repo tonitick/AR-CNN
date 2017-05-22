@@ -10,8 +10,16 @@ This is a Tensorflow implementation of [Artifacts Reduction Convolutional Neural
 
 * change matlab working directory to `the/repository/path/data/code/source`
 
-* `extract_data` on matlab console
+* run `extract_data` on matlab console
 
 ## Training
 
+* `cd src`
+
+* `python train.py`
+
 ## Testing
+
+* `cd src`
+
+* `python test.py`

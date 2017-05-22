@@ -13,23 +13,28 @@ def variable_summaries(var):
     tf.summary.histogram('histogram', var)
 
 def makepaths(conf):
-    conf.ckpt_path = os.path.join(conf.ckpt_path, "bs=%d_quality=%d"%(conf.batch_size, conf.quality))
-    if not os.path.exists(conf.ckpt_path):
-        os.makedirs(conf.ckpt_path)
+    if conf.phase == 'train':
+        conf.ckpt_path = os.path.join(conf.ckpt_path, "quality=%d"%(conf.quality))
+        if not os.path.exists(conf.ckpt_path):
+            os.makedirs(conf.ckpt_path)
 
-    conf.param_path_path = os.path.join(conf.param_path_path, "bs=%d_quality=%d"%(conf.batch_size, conf.quality))
-    if not os.path.exists(conf.param_path_path):
-        os.makedirs(conf.param_path_path)
+        conf.param_path = os.path.join(conf.param_path, "quality=%d"%(conf.quality))
+        if not os.path.exists(conf.param_path):
+            os.makedirs(conf.param_path)
 
-    conf.summary_path = os.path.join(conf.summary_path, "bs=%d_quality=%d"%(conf.batch_size, conf.quality))
-    if tf.gfile.Exists(conf.summary_path):
-        tf.gfile.DeleteRecursively(conf.summary_path)
-    tf.gfile.MakeDirs(conf.summary_path)
+        conf.summary_path = os.path.join(conf.summary_path, "quality=%d"%(conf.quality))
+        if tf.gfile.Exists(conf.summary_path):
+            tf.gfile.DeleteRecursively(conf.summary_path)
+        tf.gfile.MakeDirs(conf.summary_path)
+    
+    else:
+        conf.image_path = os.path.join(conf.image_path, "quality=%d"%(conf.quality))
+        if not os.path.exists(conf.image_path):
+            os.makedirs(conf.image_path)
 
     return conf
 
 def save_img(arr, path):
-    print arr.shape
     arr = arr * 255
     arr = arr.reshape(arr.shape[0], arr.shape[1])
     img = Image.fromarray(arr.astype(np.uint8))

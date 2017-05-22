@@ -2,84 +2,55 @@ import tensorflow as tf
 import numpy as np
 import argparse
 import math
+import os
 from models import *
 from utils import *
-from BSDS500 import *
+from LIVE1 import *
 
 def run(conf, data):
-    sess = tf.Session()
-
-    model = ARCNN(conf)
-
-    saver = tf.train.Saver()
-    
-    if os.path.exists(conf.ckpt_path):
-        ckpt = tf.train.get_checkpoint_state(conf.ckpt_path)
-        if ckpt and ckpt.model_checkpoint_path:  
-            saver.restore(sess, ckpt.model_checkpoint_path)
-            print 'Model Restored'
-        else:
-            sess.run(tf.global_variables_initializer())
-            print 'Initialize Variables'
-    else:
-        sess.run(tf.global_variables_initializer())
-        print 'Initialize Variables'
-
-    print 'Training...'
+    print 'Testing Start.'
     for i in range(conf.epochs):
-        for j in range(conf.num_batches):
-            batch_truth, batch_compres = data.train.next_batch(conf.batch_size)
+        sess = tf.Session()
+        batch_truth, batch_compres, height, width = data.next_batch()
+        conf.height = height
+        conf.width = width
+        truths = tf.placeholder(tf.float32, [conf.batch_size, height, width, conf.channel])
+        compres = tf.placeholder(tf.float32, [conf.batch_size, height, width, conf.channel])
+        conf.valid_height = int(height * 0.9)
+        conf.valid_width = int(width * 0.9)
+        model = ARCNN(conf, truths, compres)
 
-            data_dict = {model.compres:batch_compres, model.truths:batch_truth}
+        sess.run(tf.global_variables_initializer())
+        
+        data_dict = {compres:batch_compres, truths:batch_truth}
 
-            _, cost, summary = sess.run([optimizer, model.loss, merged], feed_dict=data_dict)
+        reconstruct, cost, ori_cost = sess.run([model.F_4, model.loss, model.original_loss], feed_dict=data_dict)
 
-        writer.add_summary(summary, i)
-
-        PSNR = 10.0 * math.log(cost) / math.log(10.0)
-        print 'Epoch: %d, Cost: %f, PSNR: %f' % (i, cost, PSNR)
-    
-    saver.save(sess, conf.ckpt_path + '/model.ckpt')
-
-
-    print 'Validating...'
-    num_val_epochs = conf.num_val / conf.test_size + 1
-    for i in range(num_val_epochs):
-
-        batch_truth, batch_compres = data.test.next_batch(conf.test_size)
-
-        data_dict = {model.compres:batch_compres, model.truths:batch_truth}
-
-        cost = sess.run(model.loss, feed_dict=data_dict)
-
-        PSNR = 10.0 * math.log(cost) / math.log(10.0)
-        print 'Epoch: %d, Cost: %f, PSNR: %f' % (i, cost, PSNR)
+        PSNR = 10.0 * math.log(1.0 / cost) / math.log(10.0)
+        print 'Epoch: %d, Loss: %f, Original Loss: %f, PSNR: %f' % (i, cost, ori_cost, PSNR)
+        
+        save_img(batch_truth[0, :, :, :], os.path.join(conf.image_path, 'truth_' + str(i + 1) + '.bmp'))
+        save_img(batch_compres[0, :, :, :], os.path.join(conf.image_path, 'compres_' + str(i + 1) + '.bmp'))
+        save_img(reconstruct[0, :, :, :], os.path.join(conf.image_path, 'reconstruct_' + str(i + 1) + '.bmp'))
+    print 'Testing Completed.'
 
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epochs', type=int, default=100)
-    parser.add_argument('--batch_size', type=int, default=128)
-    parser.add_argument('--test_size', type=int, default=1024)
     parser.add_argument('--quality', type=int, default=10)
-    parser.add_argument('--grad_clip', type=int, default=1)
     parser.add_argument('--data_path', type=str, default='../data/ProcessedData/test')
-    parser.add_argument('--summary_path', type=str, default='../logs')
-    parser.add_argument('--ckpt_path', type=str, default='../ckpts')
+    parser.add_argument('--param_path', type=str, default='../params')
+    parser.add_argument('--image_path', type=str, default='../images')
     conf = parser.parse_args()
   
-    data = BSDS500(conf.data_path, conf.batch_size, conf. test_size, conf.quality)
-    conf.num_classes = 10
+    data = LIVE1(conf.data_path, conf.quality)
+    conf.epochs = 29
+    conf.batch_size = 1
     conf.img_height = 32
     conf.img_width = 32
     conf.channel = 1
-    conf.valid_height = 20
-    conf.valid_width = 20
-    conf.num_train = 522000
-    conf.num_val = 130500
-    conf.num_batches = 10
-    # conf.num_batches = num_train / conf.batch_size + 1
+    conf.phase = 'test'
 
     conf = makepaths(conf) 
     

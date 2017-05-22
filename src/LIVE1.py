@@ -27,9 +27,11 @@ class LIVE1(object):
         
         height_char = data[0:4].astype(np.uint32)
         width_char = data[4:8].astype(np.uint32)
+        
         # conver to int32
         height = int(height_char[0] + height_char[1] * 256)
         width = int(width_char[0] + width_char[1] * 256)   
+        
         truth_depth_major = data[8:(8 + height * width)].reshape([1, CHANNEL, width, height])
         compres_depth_major = data[(8 + height * width):(8 + height * width * 2)].reshape([1, CHANNEL, width, height])
 
@@ -39,4 +41,4 @@ class LIVE1(object):
         truth = truth.astype(np.float32) / 255.0
         compres = compres.astype(np.float32) / 255.0
 
-        return truth, compres
+        return truth, compres, height, width
