@@ -9,18 +9,9 @@ from BSDS500 import *
 def run(conf, data):
     sess = tf.Session()
 
-    print 'Model Defining...'
-    model = ARCNN_TRAIN(conf)
-
-    trainer = tf.train.RMSPropOptimizer(1e-3)
-    gradients = trainer.compute_gradients(model.loss)
-    clipped_gradients = [(tf.clip_by_value(_[0], -conf.grad_clip, conf.grad_clip), _[1]) for _ in gradients]
-    optimizer = trainer.apply_gradients(clipped_gradients)
+    model = ARCNN(conf)
 
     saver = tf.train.Saver()
-
-    merged = tf.summary.merge_all()
-    writer = tf.summary.FileWriter(conf.summary_path, sess.graph)
     
     if os.path.exists(conf.ckpt_path):
         ckpt = tf.train.get_checkpoint_state(conf.ckpt_path)
@@ -47,10 +38,8 @@ def run(conf, data):
 
         PSNR = 10.0 * math.log(cost) / math.log(10.0)
         print 'Epoch: %d, Cost: %f, PSNR: %f' % (i, cost, PSNR)
-        
-        if (i + 1) % 100 == 0:
-            saver.save(sess, conf.ckpt_path + '/model.ckpt')
-
+    
+    saver.save(sess, conf.ckpt_path + '/model.ckpt')
 
 
     print 'Validating...'
@@ -75,10 +64,9 @@ if __name__ == '__main__':
     parser.add_argument('--test_size', type=int, default=1024)
     parser.add_argument('--quality', type=int, default=10)
     parser.add_argument('--grad_clip', type=int, default=1)
-    parser.add_argument('--data_path', type=str, default='../data/ProcessedData/train')
+    parser.add_argument('--data_path', type=str, default='../data/ProcessedData/test')
     parser.add_argument('--summary_path', type=str, default='../logs')
     parser.add_argument('--ckpt_path', type=str, default='../ckpts')
-    parser.add_argument('--param_path', type=str, default='../params')
     conf = parser.parse_args()
   
     data = BSDS500(conf.data_path, conf.batch_size, conf. test_size, conf.quality)

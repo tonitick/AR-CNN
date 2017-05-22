@@ -37,17 +37,17 @@ def read_img(filename_queue):
     # The first bytes represent the label, which we convert from uint8->int32.
     depth_major_g = tf.reshape( \
             tf.strided_slice(record_bytes, [0], [image_bytes]), \
-            [result.depth, result.height, result.width])
+            [result.depth, result.width, result.height])
 
     # The remaining bytes after the label represent the image, which we reshape
     depth_major_c = tf.reshape( \
             tf.strided_slice(record_bytes, [image_bytes], \
                     [record_bytes_num]), \
-            [result.depth, result.height, result.width])
+            [result.depth, result.width, result.height])
 
-    result.ground_truth = tf.transpose(depth_major_g, [1, 2, 0])
+    result.ground_truth = tf.transpose(depth_major_g, [2, 1, 0])
 
-    result.compressed = tf.transpose(depth_major_c, [1, 2, 0])
+    result.compressed = tf.transpose(depth_major_c, [2, 1, 0])
   
     return result
 

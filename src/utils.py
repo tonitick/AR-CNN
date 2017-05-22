@@ -17,9 +17,20 @@ def makepaths(conf):
     if not os.path.exists(conf.ckpt_path):
         os.makedirs(conf.ckpt_path)
 
+    conf.param_path_path = os.path.join(conf.param_path_path, "bs=%d_quality=%d"%(conf.batch_size, conf.quality))
+    if not os.path.exists(conf.param_path_path):
+        os.makedirs(conf.param_path_path)
+
     conf.summary_path = os.path.join(conf.summary_path, "bs=%d_quality=%d"%(conf.batch_size, conf.quality))
     if tf.gfile.Exists(conf.summary_path):
         tf.gfile.DeleteRecursively(conf.summary_path)
     tf.gfile.MakeDirs(conf.summary_path)
 
     return conf
+
+def save_img(arr, path):
+    print arr.shape
+    arr = arr * 255
+    arr = arr.reshape(arr.shape[0], arr.shape[1])
+    img = Image.fromarray(arr.astype(np.uint8))
+    img.save(path)
