@@ -6,30 +6,18 @@ from LIVE1 import *
 from utils import *
 from PIL import Image
 
-data = BSDS500('../data/ProcessedData/train', 1, 1305, 10)
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
-batch_y, batch_x = data.test.next_batch()
+data = BSDS500('../data/ProcessedData/train', 10)
+for i in range(1):
+    batch_y, batch_x = data.train.next_batch(1305)
+    print batch_y
+
 truth = np.zeros([312, 472])
 compres = np.zeros([312, 472])
 
-truth_integrated = np.zeros([312, 472])
-compres_integrated = np.zeros([312, 472])
-for i in range(0, 29):
-    for j in range(0, 45):
+truth_integrated = np.zeros([312, 472], np.float32)
+compres_integrated = np.zeros([312, 472], np.float32)
+for i in range(29):
+    for j in range(45):
         truth_integrated[(i * 10):(i * 10 + 32), (j * 10):(j * 10 + 32)] = batch_y[(i * 45 + j), :, :, 0]
         compres_integrated[(i * 10):(i * 10 + 32), (j * 10):(j * 10 + 32)] = batch_x[(i * 45 + j), :, :, 0]
 
