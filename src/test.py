@@ -12,12 +12,12 @@ def run(conf, data):
     for i in range(conf.epochs):
         sess = tf.Session()
         batch_truth, batch_compres, height, width = data.next_batch()
-        conf.height = height
-        conf.width = width
+        conf.img_height = height
+        conf.img_width = width
         truths = tf.placeholder(tf.float32, [conf.batch_size, height, width, conf.channel])
         compres = tf.placeholder(tf.float32, [conf.batch_size, height, width, conf.channel])
-        conf.valid_height = int(height * 0.9)
-        conf.valid_width = int(width * 0.9)
+        conf.valid_height = int(height * 1.0)
+        conf.valid_width = int(width * 1.0)
         model = ARCNN(conf, truths, compres)
 
         sess.run(tf.global_variables_initializer())
@@ -47,8 +47,6 @@ if __name__ == '__main__':
     data = LIVE1(conf.data_path, conf.quality)
     conf.epochs = 29
     conf.batch_size = 1
-    conf.img_height = 32
-    conf.img_width = 32
     conf.channel = 1
     conf.phase = 'test'
 
