@@ -29,9 +29,9 @@ def run(conf, data):
         PSNR = 10.0 * math.log(1.0 / cost) / math.log(10.0)
         print 'Epoch: %d, Loss: %f, Original Loss: %f, PSNR: %f' % (i, cost, ori_cost, PSNR)
         
-        save_img(batch_truth[0, :, :, :], os.path.join(conf.image_path, 'truth_' + str(i + 1) + '.bmp'))
-        save_img(batch_compres[0, :, :, :], os.path.join(conf.image_path, 'compres_' + str(i + 1) + '.bmp'))
-        save_img(reconstruct[0, :, :, :], os.path.join(conf.image_path, 'reconstruct_' + str(i + 1) + '.bmp'))
+        save_img(batch_truth[0, :, :, :], os.path.join(conf.image_path, str(i + 1) + '_truth' + '.bmp'))
+        save_img(batch_compres[0, :, :, :], os.path.join(conf.image_path, str(i + 1) + '_compress' + '.bmp'))
+        save_img(reconstruct[0, :, :, :], os.path.join(conf.image_path, str(i + 1) + '_reconstruct' + '.bmp'))
     print 'Testing Completed.'
 
 

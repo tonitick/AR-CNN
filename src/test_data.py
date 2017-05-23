@@ -41,8 +41,3 @@ truth, compres, height, width = data.next_batch()
 
 save_img(truth[0, :, :, :], './test_truth.bmp')
 save_img(compres[0, :, :, :], './test_compres.bmp')
-
-
-
-
-

@@ -37,5 +37,13 @@ def makepaths(conf):
 def save_img(arr, path):
     arr = arr * 255
     arr = arr.reshape(arr.shape[0], arr.shape[1])
+    
+    for i in range(arr.shape[0]):
+        for j in range(arr.shape[1]):
+            if arr[i][j] > 255.0:
+                arr[i][j] = 255.0
+            if arr[i][j] < 0.0:
+                arr[i][j] = 0.0
+    
     img = Image.fromarray(arr.astype(np.uint8))
     img.save(path)

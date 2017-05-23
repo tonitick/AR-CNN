@@ -8,16 +8,16 @@ class ARCNN(object):
         self.truths = truths
         self.compres = compres
 
-        # feature extraction
+        # layer1: feature extraction
         self.W_1, self.b_1, self.F_1 = conv_layer(conf, 'feature_extraction', self.compres, 9, 64, True)
         
-        # feature enhancement
+        # layer2: feature enhancement
         self.W_2, self.b_2, self.F_2 = conv_layer(conf, 'feature_enhancement', self.F_1, 7, 32, True)
 
-        # mapping
+        # layer3: mapping
         self.W_3, self.b_3, self.F_3 = conv_layer(conf, 'mapping', self.F_2, 1, 16, True)
 
-        # reconstruction
+        # layer4: reconstruction
         self.W_4, self.b_4, self.F_4 = conv_layer(conf, 'reconstruction', self.F_3, 5, conf.channel, False)
 
         shift_height = (conf.img_height - conf.valid_height) / 2
